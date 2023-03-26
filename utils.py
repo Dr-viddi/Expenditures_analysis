@@ -33,35 +33,44 @@ def load_config(path: str) -> dict:
     return cfg
 
 
-def accumulate_expenditure(account_history_df: pd.DataFrame,
-                           position: str,
-                           column_key: str,
-                           column_value: str
-                           ) -> list[float, int, pd.DataFrame]:
-    """Sums up the total amount spent and the number of positions
+def extract_expenditures_for_position(account_history_df: pd.DataFrame,
+                                      position_identifiers: list[str],
+                                      column_key: str
+                                      ) -> pd.DataFrame:
+    """Creates a dataframe containing only the expenditures to the 
+    corresponding position (identified via the position identifiers).
 
     Args:
-        account_history_df: Dataframe from the bank account.
-        position: position that is summed up.
-        column_key: column name to be searched.
-        column_value: column name containing the value of the expenditure.
+        account_history_df: The bank account dataframe.
+        position_identifiers: list of strings identifying expenditures 
+            for the corresponding position.
+        column_key: The column name to look at.
 
     Returns:
-        total_amount: total amount spent
-        number_of_positions: number of positions
-        position_df: dataframe containing the entries
+        The dataframe containing the expenditures.
     """
     position_df = account_history_df[
         account_history_df[column_key].str.contains(
-            '|'.join(position),
+            '|'.join(position_identifiers),
             na=False
             )
         ]
-    number_of_positions = len(position_df)
-    position_df[column_value].replace(',', '.', regex=True, inplace=True)
-    position_df[column_value] = position_df[column_value].astype(float)
-    total_amount = position_df[column_value].sum()
-    return total_amount, number_of_positions, position_df
+    return position_df
+
+
+def convert_column_to_float(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """Converts a column in a dataframe to float
+
+    Args:
+        df: Dataframe containing the column to be converted.
+        column: Column that will be converted.
+
+    Returns:
+        The converted dataframe
+    """
+    df[column].replace(',', '.', regex=True, inplace=True)
+    df[column] = df[column].astype(float)
+    return df
 
 
 def remove_expenditures_from_account_history(account_history_df: pd.DataFrame,

@@ -1,13 +1,14 @@
 import pandas as pd
 from utils import (
     load_config,
-    accumulate_expenditure,
     remove_expenditures_from_account_history,
-    add_expenditure_infos_to_overview_df)
+    add_expenditure_infos_to_overview_df,
+    extract_expenditures_for_position,
+    convert_column_to_float)
 from plotter import Plotter
 
 # load config
-cfg = load_config("config.yml")
+cfg = load_config("example_config.yml")
 
 # Expenditures for each month
 for month in cfg["paths"]["months"]:
@@ -19,6 +20,8 @@ for month in cfg["paths"]["months"]:
                                   sep=";",
                                   usecols=cfg["imported_bank_data"]
                                   )
+    account_history[cfg["column_name_value"]] = \
+        account_history[cfg["column_name_value"]].str.replace('.', '')
 
     # delete positions not to be consierered, eg. income
     for column in cfg["exclude_data"]:
@@ -36,36 +39,62 @@ for month in cfg["paths"]["months"]:
     overview_df['counts'] = 0
 
     # adding expenditures for each position class
+    column_containing_expenditure_identifiers = cfg["column_name_key"]
+    column_containing_expenditure_values = cfg["column_name_value"]
     for position in cfg["positions"]:
         output_path = month_dir + position + ".csv"
         position_identifiers = cfg["positions"][position]
-        column_containing_expenditure_identifiers = cfg["column_name_key"]
-        column_containing_expenditure_values = cfg["column_name_value"]
-        total_expenditure, number_of_expenditures, df_position = \
-            accumulate_expenditure(account_history,
-                                   position_identifiers,
-                                   column_containing_expenditure_identifiers,
-                                   column_containing_expenditure_values
-                                   )
+
+        position_df = extract_expenditures_for_position(
+            account_history,
+            position_identifiers,
+            column_containing_expenditure_identifiers
+            )
+        position_df = convert_column_to_float(
+            position_df,
+            column_containing_expenditure_values
+            )
+        number_of_expenditures = len(position_df)
+        total_expenditure = position_df[
+            column_containing_expenditure_values
+            ].sum()
+
         account_history = remove_expenditures_from_account_history(
             account_history,
             position_identifiers
             )
+
         overview_df = add_expenditure_infos_to_overview_df(
-            overview_df, position,
+            overview_df,
+            position,
             total_expenditure,
             number_of_expenditures
             )
-        df_position.to_csv(output_path, sep=';')
-    # prevent numerical issues when saving to CSV
-    overview_df['Sum'] = overview_df['Sum'].astype('int')
+        position_df.to_csv(output_path, sep=';')
 
     # all expenditures which are not assigned to a class defined in the
-    # config will be added to "misc" class
-    output_path = month_dir + "misc.csv"
+    # config will be added to "Sonstiges" class
+    overview_df.loc[len(overview_df)] = ["Sonstiges", 0, 0]
+    account_history = convert_column_to_float(
+            account_history,
+            column_containing_expenditure_values
+            )
+    number_of_expenditures = len(account_history)
+    total_expenditure = account_history[
+        column_containing_expenditure_values
+        ].sum()
+    overview_df = add_expenditure_infos_to_overview_df(
+            overview_df,
+            "Sonstiges",
+            total_expenditure,
+            number_of_expenditures
+            )
+    output_path = month_dir + "Sonstiges.csv"
     account_history.to_csv(output_path, sep=';')
 
     # change signs and index for a more convenient view
+    # prevent numerical issues when saving to CSV
+    overview_df['Sum'] = overview_df['Sum'].astype('int')
     overview_df['Sum'] = overview_df['Sum'].abs()
     overview_df.set_index('Position', inplace=True)
 
@@ -85,6 +114,7 @@ for month in cfg["paths"]["months"]:
 
 # Expenditures for the year
 position_list = list(cfg["positions"].keys())
+position_list.append("Sonstiges")
 position_list.append("Total")
 overview_year_df = pd.DataFrame(position_list, columns=['Position'])
 
