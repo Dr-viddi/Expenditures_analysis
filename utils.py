@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import yaml
 
+
 def get_evaluated_month_filenames(folder: str) -> list[str]:
     """Returns list containing the file names from the evaluated months.
 
@@ -33,10 +34,10 @@ def load_config(path: str) -> dict:
 
 
 def accumulate_expenditure(account_history_df: pd.DataFrame,
-               position: str,
-               column_key: str,
-               column_value: str
-               ) -> list[float, int, pd.DataFrame]:
+                           position: str,
+                           column_key: str,
+                           column_value: str
+                           ) -> list[float, int, pd.DataFrame]:
     """Sums up the total amount spent and the number of positions
 
     Args:
@@ -50,15 +51,22 @@ def accumulate_expenditure(account_history_df: pd.DataFrame,
         number_of_positions: number of positions
         position_df: dataframe containing the entries
     """
-    position_df = account_history_df[account_history_df[column_key].str.contains('|'.join(position), na=False)]
+    position_df = account_history_df[
+        account_history_df[column_key].str.contains(
+            '|'.join(position),
+            na=False
+            )
+        ]
     number_of_positions = len(position_df)
-    position_df[column_value].replace(',','.', regex=True, inplace=True)
+    position_df[column_value].replace(',', '.', regex=True, inplace=True)
     position_df[column_value] = position_df[column_value].astype(float)
     total_amount = position_df[column_value].sum()
     return total_amount, number_of_positions, position_df
 
 
-def remove_expenditures_from_account_history(account_history_df: pd.DataFrame, expenditures: str) -> pd.DataFrame:
+def remove_expenditures_from_account_history(account_history_df: pd.DataFrame,
+                                             expenditures: str
+                                             ) -> pd.DataFrame:
     """Removes the rows of the dataframe containing a certain string
 
     Args:
@@ -68,14 +76,17 @@ def remove_expenditures_from_account_history(account_history_df: pd.DataFrame, e
     Returns:
         Dataframe without rows containing the "position" string
     """
-    df_new = account_history_df[account_history_df["Auftraggeber"].str.contains('|'.join(expenditures))==False]
+    df_new = account_history_df[
+        account_history_df["Auftraggeber"].str.contains(
+            '|'.join(expenditures)) == False
+        ]
     return df_new
 
 
 def add_expenditure_infos_to_overview_df(overview_df: pd.DataFrame,
                                          position: str,
                                          total_amount: int,
-                                         number_of_expenditures: int 
+                                         number_of_expenditures: int
                                          ) -> pd.DataFrame:
     """Adds total amount and number of expenditures to the overview dataframe.
 
@@ -88,7 +99,7 @@ def add_expenditure_infos_to_overview_df(overview_df: pd.DataFrame,
     Returns:
         The updated Overview dataframe.
     """
-    index = overview_df.index[overview_df["Position"]==position].tolist()[0]
-    overview_df.loc[index,'Sum'] = total_amount
-    overview_df.loc[index,'counts'] = number_of_expenditures
+    index = overview_df.index[overview_df["Position"] == position].tolist()[0]
+    overview_df.loc[index, 'Sum'] = total_amount
+    overview_df.loc[index, 'counts'] = number_of_expenditures
     return overview_df

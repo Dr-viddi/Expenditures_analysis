@@ -1,0 +1,39 @@
+
+paths:
+    working_dir: ./2023
+    months:
+        jan: 
+            dir: 2023/Jan/
+            cvs: bank_export.csv
+        feb:
+            dir: 2023/Feb/
+            cvs: bank_export.csv
+column_name_key: Auftraggeber # column name in csv which contains the strings used to identify individul expenditures
+column_name_value: Betrag (EUR) # column name in csv which contains the value for individul expenditures
+imported_bank_data: #state which columns of the CVS file should be imported
+    - Buchungstag
+    - Auftraggeber
+    - Verwendungszweck
+    - Betrag (EUR)
+exclude_data: # eg Income, I want only analyize expenditures and not income
+    Verwendungszweck:  # column that contains the identifier string
+        - Miete/Lebenskosten
+        - Miete und Nahrung
+positions:  # Define classes to categorize expenditures. For each class, a set of identifier strings can be defined which are used to find the corresponding expenditures
+    Miete:
+        - Max Mustermann
+    Nebenkosten:
+        - Eon
+    Einkaufen:
+        - ALDI
+        - REWE
+        - EDEKA
+    Tanken:
+        - ESSO
+        - SHELL
+    Geldautomat:
+        - ING-DiBa AG
+    Amazon:
+        - AMAZON
+    Essen gehen:
+        - SUBWAY
