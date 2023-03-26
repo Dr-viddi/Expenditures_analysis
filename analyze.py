@@ -7,7 +7,7 @@ from utils import (
 from plotter import Plotter
 
 # load config
-cfg = load_config("example_config.yml")
+cfg = load_config("config.yml")
 
 # Expenditures for each month
 for month in cfg["paths"]["months"]:
@@ -112,9 +112,3 @@ plotter.print_line_chart(cfg["paths"]["working_dir"]+"/summary_line.pdf",
 plotter.print_stacked_bar_chart(cfg["paths"]["working_dir"]+"/summary_bar.pdf",
                                 "bar plot"
                                 )
-
-
-# todo:
-# Auftraggeber / Begünstiger -> Umaut Ü mit einbeziehen
-# refactor position and expedniture word
-# Mache Income als zusätzliches Feld im Plot dazu
