@@ -1,39 +1,141 @@
-
-paths:
-    working_dir: ./2023
-    months:
-        jan: 
-            dir: 2023/Jan/
-            cvs: bank_export.csv
-        feb:
-            dir: 2023/Feb/
-            cvs: bank_export.csv
-column_name_key: Auftraggeber # column name in csv which contains the strings used to identify individul expenditures
-column_name_value: Betrag (EUR) # column name in csv which contains the value for individul expenditures
-imported_bank_data: #state which columns of the CVS file should be imported
+year: 2022 # calendar year of the export 
+base_dir: ./2022/ # base working dir
+account_year_history: ./example_year_2022.csv # path to the bank account export
+imported_bank_data: # column of the CSV file that will be imported
     - Buchungstag
     - Auftraggeber
     - Verwendungszweck
     - Betrag (EUR)
-exclude_data: # eg Income, I want only analyize expenditures and not income
-    Verwendungszweck:  # column that contains the identifier string
-        - Miete/Lebenskosten
+column_name_key: Auftraggeber # column name in csv which contains the strings used to identify individul expenditures
+column_name_value: Betrag (EUR) # column name in csv which contains the value for individul expenditures
+column_date: Buchungstag # column name in csv which contains the date for individul expenditures
+exclude_data: # Data which should be excluded. eg Income, I want only analyize expenditures and not income. Add additional info here
+    Verwendungszweck: #column in csv
+        - Miete/Lebenskosten # strings in column
         - Miete und Nahrung
-positions:  # Define classes to categorize expenditures. For each class, a set of identifier strings can be defined which are used to find the corresponding expenditures
+Jan: 
+    subdir: Jan/ # subdir where the expenses of january will be stored
+    external positions: # expenses which are not listed on the bank account. You can add new entries here  
+        person_1: -200
+        person_2: -100
+    income: # income. you can add new entries here
+        - 200 # person 1
+        - 600 # person 2
+Feb: # see Jan month
+    subdir: Feb/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 2
+        - 800 # supportina
+Mar: # see Jan month
+    subdir: Mar/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 1
+        - 800 # supportina
+Apr: # see Jan month
+    subdir: Apr/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 200 # person 2
+        - 400 # support
+        - 100 # support
+May: # see Jan month
+    subdir: May/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 200 # person 2
+        - 100 # support
+        - 400 # support
+Jun: # see Jan month
+    subdir: Jun/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 200 # person 2
+        - 400 # support
+        - 100 # support
+Jul: # see Jan month
+    subdir: Jul/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 200 # person 2
+        - 400 # support
+        - 100 # support
+Aug: # see Jan month
+    subdir: Aug/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 0 # person 2
+        - 800 # support
+Sep: # see Jan month
+    subdir: Sep/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 1
+        - 400 # person 2
+        - 200 # support
+Oct: # see Jan month
+    subdir: Oct/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 2
+        - 400 # support
+Nov: # see Jan month
+    subdir: Nov/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 2
+        - 400 # support
+Dec: # see Jan month
+    subdir: Dec/
+    external positions:   
+        person_1: -200
+        person_2: -100
+    income:
+        - 600 # person 2
+        - 400 # support
+positions: # Different classes. Add your own here and define strings that identifies the classes.
     Miete:
         - Max Mustermann
     Nebenkosten:
-        - Eon
+        - E.ON
     Einkaufen:
-        - ALDI
-        - REWE
-        - EDEKA
+        - Rewe
+        - Aldi
     Tanken:
         - ESSO
         - SHELL
+    Auto:
+        - abcde
     Geldautomat:
-        - ING-DiBa AG
+        - abc
     Amazon:
         - AMAZON
+    Kita:
+        - Kindergarten superheroes
+    Internet:
+        - O2
     Essen gehen:
-        - SUBWAY
+        - Mc Donalds
+    Versicherung:
+        - Alliance

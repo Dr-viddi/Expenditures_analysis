@@ -1,9 +1,10 @@
 # Class for plotting datasets
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 
-class Plotter:
+class Month_Plotter:
 
     def __init__(self, overview_df: pd.DataFrame) -> None:
         """Init the plotter class.
@@ -14,23 +15,18 @@ class Plotter:
         """
         self.overview_df = overview_df
 
-    def print_line_chart(self, path: str, title: str) -> None:
-        """Plots a line chart.
+    def print_pie_chart(self, path: str, title: str) -> None:
+        """Plots a pie chart.
 
         Args:
-            path: Outputh path of the line chart.
-            title: Title of the line chart.
+            path: Outputh path of the pie chart.
+            title: Title of the pie chart.
         """
-        ax = self.overview_df.plot.line(
-            figsize=(20, 10),
-            title=title,
-            grid=True,
-            marker='o'
-            ).legend(loc='center left',
-                     bbox_to_anchor=(1.0, 0.5)
-                     )
-        plt.xlabel('Month')
-        plt.ylabel('Euro')
+        ax = self.overview_df.plot.pie(y='Sum',
+                                       figsize=(10, 10),
+                                       autopct='%1.1f%%',
+                                       title=title
+                                       )
         fig = ax.get_figure()
         fig.savefig(path)
 
@@ -53,18 +49,39 @@ class Plotter:
         fig = ax.get_figure()
         fig.savefig(path)
 
-    def print_pie_chart(self, path: str, title: str) -> None:
-        """Plots a pie chart.
+
+class Year_Plotter:
+
+    def __init__(self, overview_df: pd.DataFrame,
+                 income_df: pd.DataFrame
+                 ) -> None:
+        """Init the plotter class.
 
         Args:
-            path: Outputh path of the pie chart.
-            title: Title of the pie chart.
+            overview_df: Overview dataframe that contains the amount spent
+            for each class.
+            income_df: Dataframe containing the monthly income.
         """
-        ax = self.overview_df.plot.pie(y='Sum',
-                                       figsize=(10, 10),
-                                       autopct='%1.1f%%',
-                                       title=title
-                                       )
+        self.overview_df = overview_df
+        self.income_df = income_df
+
+    def print_line_chart(self, path: str, title: str) -> None:
+        """Plots a line chart.
+
+        Args:
+            path: Outputh path of the line chart.
+            title: Title of the line chart.
+        """
+        ax = self.overview_df.plot.line(
+            figsize=(20, 10),
+            title=title,
+            grid=True,
+            marker='o'
+            ).legend(loc='center left',
+                     bbox_to_anchor=(1.0, 0.5)
+                     )
+        plt.xlabel('Month')
+        plt.ylabel('Euro')
         fig = ax.get_figure()
         fig.savefig(path)
 
@@ -75,20 +92,49 @@ class Plotter:
             path: Outputh path of the bar chart.
             title: Title of the bar chart.
         """
-        total_spend = self.overview_df["Total"].to_list()
+        total_spend = np.array(self.overview_df["Total"].to_list())
+        total_income = np.array(self.income_df["Income"].to_list())
+        money_left = total_income-total_spend
         self.overview_df.drop(["Total"], axis=1, inplace=True)
+
+        fig = plt.subplots()
+        # expenditure bars
         ax = self.overview_df.plot.bar(stacked=True,
                                        figsize=(15, 10),
                                        title=title,
                                        grid=True
                                        )
-        patches = ax.patches
+        self.income_df['Income'].plot(
+            kind='line',
+            marker='x',
+            color='black',
+            ms=10
+            )
 
-        # add total amount spent on the top of the stacked bars
+        patches = ax.patches
+        # Annotate plot
         available_months_count = len(self.overview_df)
         for index in range(available_months_count):
+            # total amount spent
             ax.annotate(total_spend[index],
-                        (patches[index].get_x(), total_spend[index] + 40)
+                        (patches[index].get_x(),
+                         total_spend[index] + 40),
+                        color='r',
+                        weight='bold'
+                        )
+            # total income
+            ax.annotate(total_income[index],
+                        (patches[index].get_x(),
+                         total_income[index] + 100),
+                        color='g',
+                        weight='bold'
+                        )
+            # Money left
+            ax.annotate(money_left[index],
+                        (patches[index].get_x(),
+                         total_income[index] - 200),
+                        color='b',
+                        weight='bold'
                         )
 
         # add amount spent for each class in each stacked bar
