@@ -31,3 +31,7 @@ The script starts using the example.config.yml in the configs folder. Another co
 ```
 visualize --config <path_to_config>
 ```
+
+
+## ToDo
+* add tests
