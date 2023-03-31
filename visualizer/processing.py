@@ -1,6 +1,6 @@
 import pandas as pd
 import calendar
-from const import (MONTHS, MONTHS_STR_NR)
+from visualizer.const import (MONTHS, MONTHS_STR_NR)
 pd.options.mode.chained_assignment = None  # default='warn'
 
 

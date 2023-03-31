@@ -1,6 +1,6 @@
 from pathlib import Path
 import pandas as pd
-from const import MONTHS
+from visualizer.const import MONTHS
 
 
 class Loader:

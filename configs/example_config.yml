@@ -1,6 +1,6 @@
 year: 2022 # calendar year of the export 
-base_dir: ./2022/ # base working dir
-account_year_history: ./example_year_2022.csv # path to the bank account export
+base_dir: ./results/2022/ # base working dir
+account_year_history: ./data/example_year_2022.csv # path to the bank account export
 imported_bank_data: # column of the CSV file that will be imported
     - Buchungstag
     - Auftraggeber
